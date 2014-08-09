@@ -1,6 +1,7 @@
-QT       += core gui
+DEFINES += NOMINMAX
+DEFINES += WIN32_LEAN_AND_MEAN
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+QT       += core gui widgets websockets
 
 TARGET = Keybinder
 TEMPLATE = app
