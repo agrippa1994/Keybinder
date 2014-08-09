@@ -4,6 +4,8 @@
 #include "SAMP/SAMP.hpp"
 
 #include "QKeyHook.h"
+#include "QLineReader.h"
+
 #include <QMainWindow>
 
 namespace Ui {
@@ -20,10 +22,12 @@ public:
 
 private slots:
     void onGlobalKeyPressed(KBDLLHOOKSTRUCT *key, bool& block);
+    void onChatlog(const QString& line);
 
 private:
     Ui::MainWindow *ui;
     SAMP::SAMP m_SAMP;
+    QLineReader m_chatlogReader;
 };
 
 #endif // MAINWINDOW_H

@@ -1,14 +1,18 @@
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
 
+#include <QStandardPaths>
+
 #define SEND(VK, text) case VK: if(m_SAMP.isInChat()) break; block = true; m_SAMP.sendChat(text); break;
 
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow),
+    m_chatlogReader(QStandardPaths::locate(QStandardPaths::DocumentsLocation, "\\GTA San Andreas User Files\\SAMP\\chatlog.txt"))
 {
     ui->setupUi(this);
 
     QObject::connect(QKeyHook::instance(), SIGNAL(onGlobalKeyPressed(KBDLLHOOKSTRUCT*,bool&)), SLOT(onGlobalKeyPressed(KBDLLHOOKSTRUCT*,bool&)));
+    QObject::connect(&m_chatlogReader, SIGNAL(onLine(QString)), SLOT(onChatlog(QString)));
 }
 
 MainWindow::~MainWindow()
@@ -37,4 +41,9 @@ void MainWindow::onGlobalKeyPressed(KBDLLHOOKSTRUCT *key, bool& block)
     {
 
     }
+}
+
+void MainWindow::onChatlog(const QString &)
+{
+
 }
