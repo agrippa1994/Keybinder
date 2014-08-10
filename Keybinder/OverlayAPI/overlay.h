@@ -43,3 +43,12 @@ IMPORT int GetScreenSpecs(int& width, int& height);
 
 IMPORT int  Init();
 IMPORT void SetParam(const char *_szParamName, const char *_szParamValue);
+
+class OverlayBase
+{
+protected:
+    int _id = -1;
+
+public:
+    operator int() { return _id; }
+};

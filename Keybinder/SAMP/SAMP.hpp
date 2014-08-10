@@ -76,7 +76,7 @@ namespace SAMP
 			Module32First(hSnapshot, &entry);
 			do
 			{
-                if (_wcsicmp(entry.szModule, L"samp.dll") == 0)
+                if (_stricmp(entry.szModule, "samp.dll") == 0)
 				{
 					m_dwSAMPBase = (DWORD) entry.modBaseAddr;
 					break;
@@ -197,6 +197,18 @@ namespace SAMP
                 return false;
 
             return read(dwAddress, 0) > 0;
+        }
+
+        float getPlayerHealth()
+        {
+            if(!openSAMP())
+                return false;
+
+            DWORD dwCPed = read(0xB6F5F0, 0);
+            if(dwCPed == 0)
+                return 0.0f;
+
+            return read<float>(dwCPed + 0x540, 0.0f);
         }
 	};
 }
