@@ -186,6 +186,11 @@ namespace SAMP
 			return call(dwObject, m_dwSAMPBase + Addresses::Functions::ShowDialog, false, 0, m_dwSAMPBase + Addresses::Other::AdditionalDialogInfo, button, info, caption, style, 1);
 		}
 
+        bool isInForeground() const
+        {
+            return GetForegroundWindow() == FindWindowA(0, "GTA:SA:MP");
+        }
+
         bool isInChat()
         {
             if (!openSAMP())

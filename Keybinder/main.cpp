@@ -4,13 +4,11 @@
 #include <QApplication>
 #include <QPalette>
 #include <QStyleFactory>
+#include "windows.h"
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-
-    SetParam("use_window", "1");
-    SetParam("window", "GTA:SA:MP");
 
     // GUI-Style
     qApp->setStyle(QStyleFactory::create("Fusion"));

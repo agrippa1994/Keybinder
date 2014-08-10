@@ -18,7 +18,9 @@ public:
 
     int destroy()
     {
-        return TextDestroy(_id);
+        auto ret = TextDestroy(_id);
+        _id = -1;
+        return ret;
     }
 
     int setShadow(bool b)

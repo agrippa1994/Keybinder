@@ -6,7 +6,7 @@ QLineReader::QLineReader(const QString& filePath, QObject *parent) :
     QObject::connect(&m_timer, SIGNAL(timeout()), SLOT(onTimer()));
 
     m_timer.setSingleShot(false);
-    m_timer.start(50);
+    m_timer.start(20);
 }
 
 QLineReader::~QLineReader()
