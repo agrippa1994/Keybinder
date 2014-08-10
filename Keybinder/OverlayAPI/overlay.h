@@ -50,8 +50,6 @@ protected:
     int _id = -1;
 
     OverlayBase() : _id(-1) {
-        SetParam("use_window", "1");
-        SetParam("window", "GTA:SA:MP");
     }
 public:
     operator int() { return _id; }

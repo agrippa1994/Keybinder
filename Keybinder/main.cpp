@@ -8,6 +8,11 @@
 
 int main(int argc, char *argv[])
 {
+    SetParam("use_window", "1");
+    SetParam("window", "GTA:SA:MP");
+
+    DestroyAllVisual();
+
     QApplication a(argc, argv);
 
     // GUI-Style
