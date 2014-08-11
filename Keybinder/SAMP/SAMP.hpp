@@ -76,7 +76,7 @@ namespace SAMP
 			Module32First(hSnapshot, &entry);
 			do
 			{
-                if (_stricmp(entry.szModule, "samp.dll") == 0)
+                if (_wcsicmp(entry.szModule, L"samp.dll") == 0)
 				{
 					m_dwSAMPBase = (DWORD) entry.modBaseAddr;
 					break;

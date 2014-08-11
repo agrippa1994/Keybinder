@@ -4,6 +4,8 @@
 
 #include <QStandardPaths>
 #include <QRegularExpressionMatch>
+#include <QDebug>
+#include <QTextStream>
 #include <string>
 
 #define SEND(VK, text) case VK: if(!m_SAMP.isInForeground()) break; if(m_SAMP.isInChat()) break; block = true; m_SAMP.sendChat(text); break;
@@ -54,6 +56,10 @@ void MainWindow::onGlobalKeyPressed(KBDLLHOOKSTRUCT *key, bool& block)
         /* 3 */ SEND(0x33, "/lock");
         /* 4 */ SEND(0x34, "/engine");
         /* 5 */ SEND(0x35, "/lights");
+        /* 6 */ SEND(0x36, "/accept refill");
+        /* 7 */ SEND(0x37, "/accept repair");
+        /* 8 */ SEND(0x38, "/accept heal");
+        /* 9 */ SEND(0x39, "/accept hotdog");
 
         /* X */ SEND(0x58, "/exit");
         /* Y */ SEND(0x59, "/enter");
@@ -88,6 +94,8 @@ void MainWindow::onGlobalKeyPressed(KBDLLHOOKSTRUCT *key, bool& block)
 
 void MainWindow::onChatlog(const QString &s)
 {
+    ui->chatTextBrowser->append(s);
+
     if(s.contains("Antiflood:", Qt::CaseInsensitive))
     {
         QRegExp rx("(\\d+) Sekunde", Qt::CaseInsensitive);
@@ -96,6 +104,24 @@ void MainWindow::onChatlog(const QString &s)
             int seconds = rx.cap(1).toInt();
             m_lastSpamWarning.start(seconds * 1000 + 500);
         }
+    }
+
+    if(s.contains("* KFZ-Mechaniker", Qt::CaseInsensitive))
+    {
+        QRegularExpression rx("(\\d+) Litern für \\$(\\d+)", QRegularExpression::CaseInsensitiveOption);
+        auto match = rx.match(s);
+
+        if(!match.hasMatch())
+            return;
+
+        QString str;
+        QTextStream ts(&str);
+
+        ts << "{ffffff}Ein Mechaniker bietet dir fuer ";
+        ts << match.captured(2) << "$ " << match.captured(1) << " Liter an: ";
+        ts << (float)(match.captured(2).toFloat() / match.captured(1).toFloat()) << "$/Liter";
+
+        m_SAMP.addChatMessage(str.toStdString().c_str());
     }
 }
 
@@ -132,6 +158,7 @@ void MainWindow::onStatsOverlayTimer()
     if(stats.length() == 0)
         return;
 
+    ui->statsLabel->setText(stats);
     auto formatOverlayString = [&](QString stats, QString entry) -> QString
     {
         auto keyForEntry = [&](QString text, QString entry) -> QString
