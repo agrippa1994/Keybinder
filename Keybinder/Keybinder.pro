@@ -28,4 +28,4 @@ FORMS    += MainWindow.ui
 
 win32: LIBS += -L$$PWD/ -ldx9_overlay
 win32: LIBS += -L$$PWD/ -lRGN-Stats-API
-
+win32: RC_FILE = resource.rc

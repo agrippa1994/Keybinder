@@ -3,10 +3,11 @@
 #include "ui_MainWindow.h"
 
 #include <QStandardPaths>
-#include <QRegularExpressionMatch>
-#include <QDebug>
+#include <QRegularExpression>
 #include <QTextStream>
+
 #include <string>
+#include <functional>
 
 #define SEND(VK, text) case VK: if(!m_SAMP.isInForeground()) break; if(m_SAMP.isInChat()) break; block = true; m_SAMP.sendChat(text); break;
 
@@ -40,6 +41,47 @@ MainWindow::~MainWindow()
 bool MainWindow::isSpamWarningActive() const
 {
     return m_lastSpamWarning.isActive();
+}
+
+bool MainWindow::addChatMessage(QString str)
+{
+    str.insert(0, "{ffffff}[{0000ff}Keybinder{ffffff}] ");
+
+    ui->outputTextBrowser->append(convertToHTMLColorCodes(str));
+    return m_SAMP.addChatMessage(str.toStdString().c_str());
+}
+
+QString MainWindow::convertToHTMLColorCodes(const QString& text)
+{
+    std::function<void(QString&, QString)> convert = [&convert](QString& ret, QString str)
+    {
+        QRegularExpression rx("\\{(.*?)\\}(.*)", QRegularExpression::CaseInsensitiveOption);
+        auto globalMatch = rx.globalMatch(str);
+
+        if(ret.length() == 0)
+            ret += str.section('{', 0, 0);
+
+        if(globalMatch.hasNext())
+        {
+            auto match = globalMatch.next();
+            if(match.hasMatch())
+            {
+                QString captured = match.captured(2);
+                ret += "<font color=#" + match.captured(1) + ">" + captured.section('{', 0, 0) +"</font>";
+
+                convert(ret, captured);
+            }
+            else
+            {
+                ret += str;
+            }
+        }
+    };
+
+    QString ret;
+    convert(ret, text);
+
+    return ret;
 }
 
 void MainWindow::onGlobalKeyPressed(KBDLLHOOKSTRUCT *key, bool& block)
@@ -82,9 +124,9 @@ void MainWindow::onGlobalKeyPressed(KBDLLHOOKSTRUCT *key, bool& block)
                 m_updateStats = !m_updateStats;
 
                 if(m_updateStats)
-                    m_SAMP.addChatMessage("{ffffff} Stats-Updates: {00ff00}Aktiviert");
+                    addChatMessage("{ffffff} Stats-Updates: {00ff00}Aktiviert");
                 else
-                    m_SAMP.addChatMessage("{ffffff} Stats-Updates: {ff0000}Deaktiviert");
+                    addChatMessage("{ffffff} Stats-Updates: {ff0000}Deaktiviert");
 
                 break;
             }
@@ -94,7 +136,7 @@ void MainWindow::onGlobalKeyPressed(KBDLLHOOKSTRUCT *key, bool& block)
 
 void MainWindow::onChatlog(const QString &s)
 {
-    ui->chatTextBrowser->append(s);
+    ui->chatTextBrowser->append(convertToHTMLColorCodes(s));
 
     if(s.contains("Antiflood:", Qt::CaseInsensitive))
     {
@@ -121,7 +163,7 @@ void MainWindow::onChatlog(const QString &s)
         ts << match.captured(2) << "$ " << match.captured(1) << " Liter an: ";
         ts << (float)(match.captured(2).toFloat() / match.captured(1).toFloat()) << "$/Liter";
 
-        m_SAMP.addChatMessage(str.toStdString().c_str());
+        addChatMessage(str);
     }
 }
 

@@ -23,6 +23,8 @@ public:
     ~MainWindow();
 
     bool isSpamWarningActive() const;
+    bool addChatMessage(QString str);
+    QString convertToHTMLColorCodes(const QString& text);
 
 private slots:
     void onGlobalKeyPressed(KBDLLHOOKSTRUCT *key, bool& block);

@@ -1,6 +1,5 @@
 #include "QLineReader.h"
 #include <QTextStream>
-#include <QDebug>
 
 QLineReader::QLineReader(const QString& filePath, QObject *parent) :
     QObject(parent), m_file(filePath)
@@ -38,7 +37,7 @@ void QLineReader::onTimer()
         stream.setAutoDetectUnicode(true);
         stream.seek(0);
 
-        auto lines = stream.readAll().split("\r\n", QString::SkipEmptyParts);
+        auto lines = stream.readAll().split("\r\r\n", QString::SkipEmptyParts);
         int current = 0;
 
         for(auto& line : lines)
