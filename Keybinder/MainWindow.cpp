@@ -18,7 +18,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 {
     ui->setupUi(this);
 
-    QObject::connect(QKeyHook::instance(), SIGNAL(onGlobalKeyPressed(KBDLLHOOKSTRUCT*,bool&)), SLOT(onGlobalKeyPressed(KBDLLHOOKSTRUCT*,bool&)));
+    QObject::connect(QKeyHook::instance(), SIGNAL(onGlobalKeyPressed(KBDLLHOOKSTRUCT*,bool&)), SLOT(onGlobalKeyPressed(KBDLLHOOKSTRUCT*,bool&)), Qt::DirectConnection);
     QObject::connect(&m_chatlogReader, SIGNAL(onLine(QString)), SLOT(onChatlog(QString)));
     QObject::connect(&m_healthOverlayTimer, SIGNAL(timeout()), SLOT(onHealthOverlayTimer()));
     QObject::connect(&m_statsOverlayTimer, SIGNAL(timeout()), SLOT(onStatsOverlayTimer()));
@@ -45,7 +45,7 @@ bool MainWindow::isSpamWarningActive() const
 
 bool MainWindow::addChatMessage(QString str)
 {
-    str.insert(0, "{ffffff}[{0000ff}Keybinder{ffffff}] ");
+    str.insert(0, "  ~  {ffffff}[{33ffff}Keybinder{ffffff}] ");
 
     ui->outputTextBrowser->append(convertToHTMLColorCodes(str));
     return m_SAMP.addChatMessage(str.toStdString().c_str());
@@ -55,7 +55,7 @@ QString MainWindow::convertToHTMLColorCodes(const QString& text)
 {
     std::function<void(QString&, QString)> convert = [&convert](QString& ret, QString str)
     {
-        QRegularExpression rx("\\{(.*?)\\}(.*)", QRegularExpression::CaseInsensitiveOption);
+        QRegularExpression rx("\\{(.*?)\\}(.*)", QRegularExpression::CaseInsensitiveOption | QRegularExpression::MultilineOption);
         auto globalMatch = rx.globalMatch(str);
 
         if(ret.length() == 0)
@@ -124,9 +124,9 @@ void MainWindow::onGlobalKeyPressed(KBDLLHOOKSTRUCT *key, bool& block)
                 m_updateStats = !m_updateStats;
 
                 if(m_updateStats)
-                    addChatMessage("{ffffff} Stats-Updates: {00ff00}Aktiviert");
+                    addChatMessage("Stats-Updates: {00ff00}Aktiviert");
                 else
-                    addChatMessage("{ffffff} Stats-Updates: {ff0000}Deaktiviert");
+                    addChatMessage("Stats-Updates: {ff0000}Deaktiviert");
 
                 break;
             }
@@ -159,7 +159,7 @@ void MainWindow::onChatlog(const QString &s)
         QString str;
         QTextStream ts(&str);
 
-        ts << "{ffffff}Ein Mechaniker bietet dir fuer ";
+        ts << "Ein Mechaniker bietet dir fuer ";
         ts << match.captured(2) << "$ " << match.captured(1) << " Liter an: ";
         ts << (float)(match.captured(2).toFloat() / match.captured(1).toFloat()) << "$/Liter";
 
