@@ -31,12 +31,12 @@ int main(int argc, char *argv[])
     darkPalette.setColor(QPalette::BrightText, Qt::red);
     darkPalette.setColor(QPalette::Link, QColor(42, 130, 218));
 
-    darkPalette.setColor(QPalette::Highlight, QColor(42, 130, 218));
+    darkPalette.setColor(QPalette::Highlight, QColor(218, 130, 42));
     darkPalette.setColor(QPalette::HighlightedText, Qt::black);
 
     qApp->setPalette(darkPalette);
 
-    qApp->setStyleSheet("QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }");
+    qApp->setStyleSheet("QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; } QMenuBar { background-color: #191919; }");
 
     MainWindow w;
     w.show();

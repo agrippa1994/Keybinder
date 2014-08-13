@@ -9,7 +9,8 @@ TEMPLATE = app
 SOURCES += main.cpp\
         MainWindow.cpp \
         QKeyHook.cpp \
-        QLineReader.cpp
+        QLineReader.cpp \
+        InfoDialog.cpp
 
 HEADERS  += MainWindow.h \
         SAMP/Addresses.hpp \
@@ -22,9 +23,12 @@ HEADERS  += MainWindow.h \
         QLineReader.h \
         StatsAPI/StatsAPI.h \
         OverlayAPI/Overlay.h \
-        OverlayAPI/TextOverlay.h
+        OverlayAPI/TextOverlay.h \
+        InfoDialog.h \
+    OverlayAPI/BoxOverlay.h
 
-FORMS    += MainWindow.ui
+FORMS    += MainWindow.ui \
+         InfoDialog.ui
 
 win32: LIBS += -L$$PWD/ -ldx9_overlay
 win32: LIBS += -L$$PWD/ -lRGN-Stats-API

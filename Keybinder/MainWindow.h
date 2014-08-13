@@ -3,9 +3,11 @@
 
 #include "SAMP/SAMP.hpp"
 #include "OverlayAPI/TextOverlay.h"
+#include "OverlayAPI/BoxOverlay.h"
 
 #include "QKeyHook.h"
 #include "QLineReader.h"
+#include "InfoDialog.h"
 
 #include <QMainWindow>
 #include <QTimer>
@@ -35,6 +37,8 @@ private slots:
 private:
     Ui::MainWindow *ui;
 
+    InfoDialog m_infoDialog;
+
     SAMP::SAMP m_SAMP;
 
     QLineReader m_chatlogReader;
@@ -44,6 +48,7 @@ private:
 
     TextOverlay m_healthOverlay;
     TextOverlay m_statsOverlay;
+    BoxOverlay m_statsBoxOverlay;
 
     bool m_updateStats = true;
 

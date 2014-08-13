@@ -12,16 +12,25 @@
 #define SEND(VK, text) case VK: if(!m_SAMP.isInForeground()) break; if(m_SAMP.isInChat()) break; block = true; m_SAMP.sendChat(text); break;
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow),
+    m_infoDialog(this),
     m_chatlogReader(QStandardPaths::locate(QStandardPaths::DocumentsLocation, "\\GTA San Andreas User Files\\SAMP\\chatlog.txt")),
     m_healthOverlayTimer(this), m_statsOverlayTimer(this),
     m_lastSpamWarning(this)
 {
     ui->setupUi(this);
 
+
+    QObject::connect(ui->actionInfo, SIGNAL(triggered()), &m_infoDialog, SLOT(show()));
+
     QObject::connect(QKeyHook::instance(), SIGNAL(onGlobalKeyPressed(KBDLLHOOKSTRUCT*,bool&)), SLOT(onGlobalKeyPressed(KBDLLHOOKSTRUCT*,bool&)), Qt::DirectConnection);
+
     QObject::connect(&m_chatlogReader, SIGNAL(onLine(QString)), SLOT(onChatlog(QString)));
+    QObject::connect(&m_chatlogReader, SIGNAL(onClear()), ui->chatTextBrowser, SLOT(clear()));
+
     QObject::connect(&m_healthOverlayTimer, SIGNAL(timeout()), SLOT(onHealthOverlayTimer()));
+
     QObject::connect(&m_statsOverlayTimer, SIGNAL(timeout()), SLOT(onStatsOverlayTimer()));
+
 
     m_lastSpamWarning.setSingleShot(true);
 
@@ -102,6 +111,7 @@ void MainWindow::onGlobalKeyPressed(KBDLLHOOKSTRUCT *key, bool& block)
         /* 7 */ SEND(0x37, "/accept repair");
         /* 8 */ SEND(0x38, "/accept heal");
         /* 9 */ SEND(0x39, "/accept hotdog");
+        /* 0 */ SEND(0x30, "/accept sex");
 
         /* X */ SEND(0x58, "/exit");
         /* Y */ SEND(0x59, "/enter");
@@ -184,11 +194,22 @@ void MainWindow::onHealthOverlayTimer()
 
 void MainWindow::onStatsOverlayTimer()
 {
+    const int X = 620, Y = 160;
     if(!m_SAMP.isInForeground())
         return;
 
+    if(m_statsBoxOverlay == -1)
+    {
+        m_statsBoxOverlay.init(X, Y, 140, 400, 0x80000000, true);
+        m_statsBoxOverlay.setBorder(3, true);
+        m_statsBoxOverlay.setBorderColor(0xFF886A08);
+    }
+
+    if(m_statsBoxOverlay == -1)
+        return;
+
     if(m_statsOverlay == -1)
-        m_statsOverlay.init("Trebuchet MS", 8, false, false, 660, 160, 0xFFFFFFFF, "", true, true);
+        m_statsOverlay.init("Trebuchet MS", 7, false, false, X + 10, Y + 5, 0xFFFFFFFF, "Statistik wird geladen und initialisiert...", true, true);
 
     if(m_statsOverlay == -1)
         return;
@@ -201,8 +222,11 @@ void MainWindow::onStatsOverlayTimer()
         return;
 
     ui->statsLabel->setText(stats);
-    auto formatOverlayString = [&](QString stats, QString entry) -> QString
+    auto formatOverlayString = [&](QString stats, QString entry, QString display) -> QString
     {
+        if(display.length() == 0)
+            display = entry;
+
         auto keyForEntry = [&](QString text, QString entry) -> QString
         {
             QRegularExpression rx(entry + ":\\[(.*?)\\]", QRegularExpression::MultilineOption | QRegularExpression::CaseInsensitiveOption);
@@ -213,7 +237,7 @@ void MainWindow::onStatsOverlayTimer()
             return {};
         };
 
-        return QString().sprintf("{ffffff}%s: {00ff00}%s\r\n", entry.toStdString().c_str(), keyForEntry(stats, entry).toStdString().c_str());
+        return QString().sprintf("{ffffff}%s: {ff0000}%s\r\n", display.toStdString().c_str(), keyForEntry(stats, entry).toStdString().c_str());
     };
 
 
@@ -223,23 +247,40 @@ void MainWindow::onStatsOverlayTimer()
     else
         overlay_str += "{ff0000} Deaktiviert\r\n";
 
-    overlay_str += formatOverlayString(stats, "Materialien");
-    overlay_str += formatOverlayString(stats, "SafeMats");
+    overlay_str += "\r\n{33ffff} ~ Allgemeines ~\r\n";
+    overlay_str += formatOverlayString(stats, "Level", "");
+    overlay_str += formatOverlayString(stats, "Respekt", "");
+    overlay_str += formatOverlayString(stats, "Spielzeit", "");
+    overlay_str += formatOverlayString(stats, "Tel.", "Nummer");
+    overlay_str += formatOverlayString(stats, "WantedLevel", "Wanteds");
+    overlay_str += formatOverlayString(stats, "Minuten seit Payday", "");
 
-    overlay_str += formatOverlayString(stats, "Drogen");
-    overlay_str += formatOverlayString(stats, "SafeDrugs");
+    overlay_str += "\r\n{33ffff} ~ Materialien ~\r\n";
+    overlay_str += formatOverlayString(stats, "Materialien", "Mats auf der Hand");
+    overlay_str += formatOverlayString(stats, "SafeMats", "Mats in der Savebox");
 
-    overlay_str += formatOverlayString(stats, "HackingCodes");
+    overlay_str += "\r\n{33ffff} ~ Drogen ~\r\n";
+    overlay_str += formatOverlayString(stats, "Drogen", "Drogen auf der Hand");
+    overlay_str += formatOverlayString(stats, "SafeDrugs", "Drogen in der Savebox");
 
-    overlay_str += formatOverlayString(stats, "Kondome");
+    overlay_str += "\r\n{33ffff} ~ Hacking ~\r\n";
+    overlay_str += formatOverlayString(stats, "HackingCodes", "Codes");
 
-    overlay_str += formatOverlayString(stats, "Respekt");
-    overlay_str += formatOverlayString(stats, "Geld");
-    overlay_str += formatOverlayString(stats, "Bank");
-    overlay_str += formatOverlayString(stats, "Tode");
-    overlay_str += formatOverlayString(stats, "WantedLevel");
-    overlay_str += formatOverlayString(stats, "Minuten seit Payday");
+    overlay_str += "\r\n{33ffff} ~ Eigentum ~\r\n";
+    overlay_str += formatOverlayString(stats, "Kondome", "");
+
+    overlay_str += "\r\n{33ffff} ~ Vermoegen ~\r\n";
+    overlay_str += formatOverlayString(stats, "Geld", "Geld auf der Hand");
+    overlay_str += formatOverlayString(stats, "Bank", "");
+
+    overlay_str += "\r\n{33ffff} ~ Deathmatch ~\r\n";
+    overlay_str += formatOverlayString(stats, "Kills\\(DM\\)", "Kills davon SDM");
+    overlay_str += formatOverlayString(stats, "Tode", "");
+    overlay_str += formatOverlayString(stats, "DM-Rate", "");
 
     if(!m_statsOverlay.setString(overlay_str.toStdString().c_str()))
+    {
         m_statsOverlay.destroy();
+        m_statsBoxOverlay.destroy();
+    }
 }
