@@ -27,8 +27,8 @@ HEADERS  += MainWindow.h \
         StatsAPI/StatsAPI.h \
         OverlayAPI/Overlay.h \
         OverlayAPI/TextOverlay.h \
-        InfoDialog.h \
-    OverlayAPI/BoxOverlay.h
+        OverlayAPI/BoxOverlay.h \
+        InfoDialog.h
 
 FORMS    += MainWindow.ui \
          InfoDialog.ui
