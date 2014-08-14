@@ -25,6 +25,7 @@
 */
 
 #pragma once
+#define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <TlHelp32.h>
 
@@ -76,7 +77,11 @@ namespace SAMP
 			Module32First(hSnapshot, &entry);
 			do
 			{
+#ifdef UNICODE
                 if (_wcsicmp(entry.szModule, L"samp.dll") == 0)
+#else
+				if (_stricmp(entry.szModule, "samp.dll") == 0)
+#endif
 				{
 					m_dwSAMPBase = (DWORD) entry.modBaseAddr;
 					break;
