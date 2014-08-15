@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>587</width>
-    <height>399</height>
+    <width>546</width>
+    <height>425</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -106,6 +106,13 @@
              </property>
             </widget>
            </item>
+           <item row="9" column="0">
+            <widget class="QLabel" name="label_18">
+             <property name="text">
+              <string>0: /accept sex</string>
+             </property>
+            </widget>
+           </item>
           </layout>
          </widget>
         </item>
@@ -178,7 +185,7 @@
       </widget>
       <widget class="QTabWidget" name="tabWidget">
        <property name="currentIndex">
-        <number>2</number>
+        <number>1</number>
        </property>
        <property name="movable">
         <bool>true</bool>
@@ -250,7 +257,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>587</width>
+     <width>546</width>
      <height>21</height>
     </rect>
    </property>
