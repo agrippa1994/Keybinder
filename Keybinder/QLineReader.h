@@ -10,7 +10,7 @@ class QLineReader : public QObject
     Q_OBJECT
 
 public:
-    explicit QLineReader(const QString& filePath, QObject *parent = 0);
+    explicit QLineReader(const QString& filePath, const QString& delimiter = "\r\n", QObject *parent = 0);
     ~QLineReader();
 
     operator bool();
@@ -24,6 +24,7 @@ private slots:
 
 private:
     QFile m_file;
+    QString m_delimiter;
     QTimer m_timer;
     int m_lineCount = 0;
 

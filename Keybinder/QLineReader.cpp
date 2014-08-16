@@ -1,8 +1,8 @@
 #include "QLineReader.h"
 #include <QTextStream>
-
-QLineReader::QLineReader(const QString& filePath, QObject *parent) :
-    QObject(parent), m_file(filePath)
+#include <QDebug>
+QLineReader::QLineReader(const QString& filePath, const QString& delimiter, QObject *parent) :
+    QObject(parent), m_file(filePath), m_delimiter(delimiter)
 {
     QObject::connect(&m_timer, SIGNAL(timeout()), SLOT(onTimer()));
 
@@ -37,19 +37,19 @@ void QLineReader::onTimer()
         stream.setAutoDetectUnicode(true);
         stream.seek(0);
 
-        auto lines = stream.readAll().split("\r\r\n", QString::SkipEmptyParts);
+        auto lines = stream.readAll().split(m_delimiter, QString::SkipEmptyParts);
         int current = 0;
 
         for(auto& line : lines)
         {
+            current ++;
+
             if(current > m_lineCount)
             {
                 m_lineCount = current;
 
                 emit onLine(line);
-            }
-
-            current ++;
+            }   
         }
     }
 }
@@ -62,5 +62,5 @@ int QLineReader::lineCount()
     QTextStream stream(&m_file);
     stream.seek(0);
 
-    return stream.readAll().split("\r\n").count();
+    return stream.readAll().split(m_delimiter, QString::SkipEmptyParts).count();
 }

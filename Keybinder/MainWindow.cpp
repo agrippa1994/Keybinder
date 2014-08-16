@@ -13,7 +13,7 @@
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow),
     m_infoDialog(this),
-    m_chatlogReader(QStandardPaths::locate(QStandardPaths::DocumentsLocation, "\\GTA San Andreas User Files\\SAMP\\chatlog.txt")),
+    m_chatlogReader(QStandardPaths::locate(QStandardPaths::DocumentsLocation, "\\GTA San Andreas User Files\\SAMP\\chatlog.txt"), "\r\r\n"),
     m_healthOverlayTimer(this), m_statsOverlayTimer(this),
     m_lastSpamWarning(this)
 {
